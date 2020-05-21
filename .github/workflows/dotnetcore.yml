@@ -1,0 +1,38 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Framework
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 4.6.1
+    - name: Install dependencies
+      run: dotnet restore tests/ctwintest/ctwintest.csproj 
+    - name: Install Nuget 1  
+      run: dotnet add tests/ctwintest/ctwintest.csproj package Microsoft.Identity.Client -v 4.14.0
+    - name: Install Nuget 2  
+      run: dotnet add tests/ctwintest/ctwintest.csproj package Microsoft.NET.Test.Sdk -v 16.6.1 
+    - name: Install Nuget 3  
+      run: dotnet add tests/ctwintest/ctwintest.csproj package MSTest.TestAdapter -v 2.1.1
+    - name: Install Nuget 4  
+      run: dotnet add tests/ctwintest/ctwintest.csproj package MSTest.TestFramework -v 2.1.1
+    - name: Install Nuget 5
+      run: dotnet add tests/ctwintest/ctwintest.csproj package Newtonsoft.Json -v 12.0.3
+    - name: Install Nuget 6  
+      run: dotnet add tests/ctwintest/ctwintest.csproj package xunit.runner.visualstudio -v 2.4.1
+
+    - name: Build
+      run: dotnet build tests/ctwintest/ctwintest.csproj --configuration Release --no-restore
+    - name: Test
+      run: dotnet test tests/ctwintest/ctwintest.csproj --no-restore --verbosity normal
